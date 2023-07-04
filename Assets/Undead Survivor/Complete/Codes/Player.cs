@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Goldmetal.UndeadSurvivor
 {
@@ -36,9 +35,8 @@ namespace Goldmetal.UndeadSurvivor
         {
             if (!GameManager.instance.isLive)
                 return;
-
-            //inputVec.x = Input.GetAxisRaw("Horizontal");
-            //inputVec.y = Input.GetAxisRaw("Vertical");
+            inputVec.x = Input.GetAxisRaw("Horizontal");
+            inputVec.y = Input.GetAxisRaw("Vertical");
         }
 
         void FixedUpdate()
@@ -70,19 +68,25 @@ namespace Goldmetal.UndeadSurvivor
 
             GameManager.instance.health -= Time.deltaTime * 10;
 
-            if (GameManager.instance.health < 0) {
-                for (int index = 2; index < transform.childCount; index++) {
-                    transform.GetChild(index).gameObject.SetActive(false);
-                }
-
-                anim.SetTrigger("Dead");
-                GameManager.instance.GameOver();
+            if (GameManager.instance.health < 0) 
+            {
+                LifeTracking();
             }
         }
-
-        void OnMove(InputValue value)
+        void LifeTracking()
         {
-            inputVec = value.Get<Vector2>();
+            for (int index = 2; index < transform.childCount; index++)
+            {
+                transform.GetChild(index).gameObject.SetActive(false);
+            }
+
+            anim.SetTrigger("Dead");
+            GameManager.instance.GameOver();
+        }
+
+        public void OnMove(Vector2 value)
+        {
+            inputVec = value;
         }
     }
 }
